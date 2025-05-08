@@ -50,7 +50,7 @@ export class InverterSunSpecConnection extends SunSpecConnection {
             modelAddressById.get(101);
 
         if (!address) {
-            throw new Error('No SunSpec inverter model address');
+            throw new Error('Anton test changes No SunSpec inverter model address');
         }
 
         const data = await inverterModel.read({
