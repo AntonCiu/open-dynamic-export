@@ -54,7 +54,7 @@ export class ModbusConnection {
             case 'disconnected': {
                 const connectPromise = (async () => {
                     try {
-                        this.logger.info(`Anton test changes Modbus client connecting`);
+                        this.logger.info(`Modbus client connecting`);
 
                         const abortController = new AbortController();
 

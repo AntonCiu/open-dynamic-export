@@ -2,11 +2,21 @@ import 'dotenv/config';
 import { getConfig } from '../../helpers/config.js';
 import { InverterSunSpecConnection } from '../../connections/sunspec/connection/inverter.js';
 import { MeterSunSpecConnection } from '../../connections/sunspec/connection/meter.js';
-import { getInverterMetrics } from '../../connections/sunspec/helpers/inverterMetrics.js';
-import { getMeterMetrics } from '../../connections/sunspec/helpers/meterMetrics.js';
+import { getInverterMetrics_int, getInverterMetrics_float } from '../../connections/sunspec/helpers/inverterMetrics.js';
+import { getMeterMetrics_int, getMeterMetrics_float } from '../../connections/sunspec/helpers/meterMetrics.js';
 import { getNameplateMetrics } from '../../connections/sunspec/helpers/nameplateMetrics.js';
 import { getSettingsMetrics } from '../../connections/sunspec/helpers/settingsMetrics.js';
 import { getStatusMetrics } from '../../connections/sunspec/helpers/statusMetrics.js';
+import { MeterModel_float, MeterModel_int } from '../../connections/sunspec/models/meter.js';
+import { InverterModel_float, InverterModel_int } from '../../connections/sunspec/models/inverter.js';
+
+function isMeterModelFloat(meter: MeterModel_int | MeterModel_float): meter is MeterModel_float {
+    return [211, 212, 213, 214].includes(meter.ID);
+}
+
+function isInverterModelFloat(inverter: InverterModel_int | InverterModel_float): inverter is InverterModel_float {
+    return [112, 111, 113].includes(inverter.ID); // Replace with actual float model IDs
+}
 
 export async function getSunSpecData() {
     const config = getConfig();
@@ -17,14 +27,26 @@ export async function getSunSpecData() {
 
     const invertersData = await Promise.all(
         invertersConnections.map(async (inverter) => {
+            const common = await inverter.getCommonModel();
+            const inverterModel = await inverter.getInverterModel();
+            const nameplate = await inverter.getNameplateModel();
+            const settings = await inverter.getSettingsModel();
+            const status = await inverter.getStatusModel();
+            const controls = await inverter.getControlsModel(); // Initialize the controls variable
+            const mppt = await inverter.getMpptModel(); // Initialize the mppt variable
+            const inverterMetrics = isInverterModelFloat(inverterModel)
+                ? getInverterMetrics_float(inverterModel)
+                : getInverterMetrics_int(inverterModel);
+
             return {
-                common: await inverter.getCommonModel(),
-                inverter: await inverter.getInverterModel(),
-                nameplate: await inverter.getNameplateModel(),
-                settings: await inverter.getSettingsModel(),
-                status: await inverter.getStatusModel(),
-                controls: await inverter.getControlsModel(),
-                mppt: await inverter.getMpptModel(),
+                common,
+                inverter: inverterModel,
+                nameplate,
+                settings,
+                status,
+                controls,
+                mppt,
+                inverterMetrics,
             };
         }),
     );
@@ -39,10 +61,14 @@ export async function getSunSpecData() {
             meter: await meterConnection.getMeterModel(),
         };
 
+        const meterMetrics = isMeterModelFloat(meterData.meter)
+            ? getMeterMetrics_float(meterData.meter)
+            : getMeterMetrics_int(meterData.meter);
+
         return {
             metersData: meterData,
             meterMetrics: {
-                meter: getMeterMetrics(meterData.meter),
+                meter: meterMetrics,
             },
         };
     })();
@@ -65,7 +91,7 @@ export async function getSunSpecData() {
             mppt: inverterData.mppt,
         })),
         inverterMetrics: invertersData.map((inverterData) => ({
-            inverter: getInverterMetrics(inverterData.inverter),
+            inverter: inverterData.inverterMetrics,
             nameplate: getNameplateMetrics(inverterData.nameplate),
             settings: getSettingsMetrics(inverterData.settings),
             status: (() => {

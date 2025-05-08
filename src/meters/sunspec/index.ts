@@ -5,8 +5,8 @@ import { type InvertersPoller } from '../../coordinator/helpers/inverterSample.j
 import { type Config } from '../../helpers/config.js';
 import { type DerSample } from '../../coordinator/helpers/derSample.js';
 import { MeterSunSpecConnection } from '../../connections/sunspec/connection/meter.js';
-import { getMeterMetrics } from '../../connections/sunspec/helpers/meterMetrics.js';
-import { type MeterModel } from '../../connections/sunspec/models/meter.js';
+import { getMeterMetrics_int, getMeterMetrics_float } from '../../connections/sunspec/helpers/meterMetrics.js';
+import { type MeterModel_int, type MeterModel_float, meterModel_int } from '../../connections/sunspec/models/meter.js';
 
 type SunSpecMeterConfig = Extract<Config['meter'], { type: 'sunspec' }>;
 
@@ -52,23 +52,48 @@ export class SunSpecMeterSiteSamplePoller extends SiteSamplePollerBase {
             'polled SunSpec meter data',
         );
 
-        const siteSample = (() => {
-            const sample = generateSiteSample({
-                meter: meterModel,
-            });
-
-            switch (this.location) {
-                case 'consumption':
-                    return convertConsumptionMeteringToFeedInMetering({
-                        siteSample: sample,
-                        derSample: this.derSampleCache,
-                    });
-                case 'feedin':
-                    return sample;
-            }
-        })();
-
-        return siteSample;
+        if (meterModel.ID == 204 || meterModel.ID == 203 || meterModel.ID == 202 || meterModel.ID == 201) {
+            this.logger.debug('Meter model is int');
+            const siteSample = (() => {
+                const sample = generateSiteSample_int({
+                    meter: meterModel as MeterModel_int,
+                });
+    
+                switch (this.location) {
+                    case 'consumption':
+                        return convertConsumptionMeteringToFeedInMetering({
+                            siteSample: sample,
+                            derSample: this.derSampleCache,
+                        });
+                    case 'feedin':
+                        return sample;
+                }
+            })();
+    
+            return siteSample;
+            
+        }
+        else  {
+            this.logger.debug('Meter model is float');
+            const siteSample = (() => {
+                const sample = generateSiteSample_float({
+                    meter: meterModel as MeterModel_float,
+                });
+    
+                switch (this.location) {
+                    case 'consumption':
+                        return convertConsumptionMeteringToFeedInMetering({
+                            siteSample: sample,
+                            derSample: this.derSampleCache,
+                        });
+                    case 'feedin':
+                        return sample;
+                }
+            })();
+    
+            return siteSample;
+        }
+        
     }
 
     override onDestroy() {
@@ -76,9 +101,44 @@ export class SunSpecMeterSiteSamplePoller extends SiteSamplePollerBase {
     }
 }
 
-function generateSiteSample({ meter }: { meter: MeterModel }): SiteSample {
-    const meterMetrics = getMeterMetrics(meter);
+function generateSiteSample_int({ meter }: { meter: MeterModel_int }): SiteSample {
+    const meterMetrics = getMeterMetrics_int(meter);
+    return {
+        date: new Date(),
+        realPower: meterMetrics.WphA
+            ? {
+                  type: 'perPhaseNet',
+                  phaseA: meterMetrics.WphA,
+                  phaseB: meterMetrics.WphB,
+                  phaseC: meterMetrics.WphC,
+                  net: meterMetrics.W,
+              }
+            : { type: 'noPhase', net: meterMetrics.W },
+        reactivePower: meterMetrics.VARphA
+            ? {
+                  type: 'perPhaseNet',
+                  phaseA: meterMetrics.VARphA,
+                  phaseB: meterMetrics.VARphB,
+                  phaseC: meterMetrics.VARphC,
+                  net: assertNonNull(meterMetrics.VAR),
+              }
+            : {
+                  type: 'noPhase',
+                  net: assertNonNull(meterMetrics.VAR),
+              },
+        voltage: {
+            type: 'perPhase',
+            phaseA: assertNonNull(meterMetrics.PhVphA ?? meterMetrics.PhV),
+            phaseB: meterMetrics.PhVphB,
+            phaseC: meterMetrics.PhVphC,
+        },
+        frequency: meterMetrics.Hz,
+    };
+    
+}
 
+function generateSiteSample_float({ meter }: { meter: MeterModel_float }): SiteSample {
+    const meterMetrics = getMeterMetrics_float(meter);
     return {
         date: new Date(),
         realPower: meterMetrics.WphA
@@ -111,6 +171,7 @@ function generateSiteSample({ meter }: { meter: MeterModel }): SiteSample {
         frequency: meterMetrics.Hz,
     };
 }
+
 
 function convertConsumptionMeteringToFeedInMetering({
     siteSample,

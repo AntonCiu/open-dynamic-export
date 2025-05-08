@@ -4,7 +4,7 @@ import {
     type ControlsModelWrite,
 } from '../models/controls.js';
 import { controlsModel } from '../models/controls.js';
-import { inverterModel } from '../models/inverter.js';
+import { inverterModel_int, inverterModel_float } from '../models/inverter.js';
 import { type NameplateModel } from '../models/nameplate.js';
 import { nameplateModel } from '../models/nameplate.js';
 import { type SettingsModel } from '../models/settings.js';
@@ -47,19 +47,34 @@ export class InverterSunSpecConnection extends SunSpecConnection {
         const address =
             modelAddressById.get(103) ??
             modelAddressById.get(102) ??
-            modelAddressById.get(101);
+            modelAddressById.get(101) ??
+            modelAddressById.get(111) ??
+            modelAddressById.get(112) ??
+            modelAddressById.get(113);
 
         if (!address) {
-            throw new Error('Anton test changes No SunSpec inverter model address');
+            throw new Error('No SunSpec inverter model address');
         }
 
-        const data = await inverterModel.read({
-            modbusConnection: this.modbusConnection,
-            address,
-            unitId: this.unitId,
-        });
+        if ( Number(address) === 103 || Number(address) === 102 || Number(address) === 101) {
 
-        return data;
+            const data = await inverterModel_int.read({
+                modbusConnection: this.modbusConnection,
+                address,
+                unitId: this.unitId,
+            });
+            return data;
+        }
+        else {
+            const data = await inverterModel_float.read({
+                modbusConnection: this.modbusConnection,
+                address,
+                unitId: this.unitId,
+            });
+            return data;
+        }
+
+        
     }
 
     async getNameplateModel() {
