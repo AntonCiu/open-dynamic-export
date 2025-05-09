@@ -1,7 +1,8 @@
 import { expect, it } from 'vitest';
 import { type InverterEvent1, type InverterModel_int, type InverterModel_float } from '../models/inverter.js';
 import { InverterState } from '../models/inverter.js';
-import { getInverterMetrics_int, getInverterMetrics_float } from './inverterMetrics.js';
+import { getInverterMetrics_int } from './inverterMetrics.js';
+import { getInverterMetrics_float } from './inverterMetrics.js';
 
 function isInverterModelFloat(inverter: InverterModel_int | InverterModel_float): inverter is InverterModel_float {
     return [112, 111, 113].includes(inverter.ID); // Replace with actual float model IDs
