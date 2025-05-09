@@ -56,23 +56,28 @@ export class InverterSunSpecConnection extends SunSpecConnection {
             throw new Error('No SunSpec inverter model address');
         }
 
-        if ( Number(address) === 103 || Number(address) === 102 || Number(address) === 101) {
 
-            const data = await inverterModel_int.read({
-                modbusConnection: this.modbusConnection,
-                address,
-                unitId: this.unitId,
-            });
-            return data;
-        }
-        else {
-            const data = await inverterModel_float.read({
-                modbusConnection: this.modbusConnection,
-                address,
-                unitId: this.unitId,
-            });
-            return data;
-        }
+
+        const model_int = await inverterModel_int.read({
+            modbusConnection: this.modbusConnection,
+            address,
+            unitId: this.unitId,
+        });
+
+        
+
+        const model_float = await inverterModel_float.read({
+            modbusConnection: this.modbusConnection,
+            address,
+            unitId: this.unitId,
+        });
+
+        const data = { ...model_int, ...model_float };
+
+    
+        return data;
+
+        
 
         
     }

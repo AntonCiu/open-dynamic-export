@@ -52,47 +52,25 @@ export class SunSpecMeterSiteSamplePoller extends SiteSamplePollerBase {
             'polled SunSpec meter data',
         );
 
-        if (meterModel.ID == 204 || meterModel.ID == 203 || meterModel.ID == 202 || meterModel.ID == 201) {
-            this.logger.debug('Meter model is int');
-            const siteSample = (() => {
-                const sample = generateSiteSample_int({
-                    meter: meterModel as MeterModel_int,
-                });
+        const siteSample = (() => {
+            const sample = generateSiteSample({
+                meter: meterModel,
+            });
+
+            switch (this.location) {
+                case 'consumption':
+                    return convertConsumptionMeteringToFeedInMetering({
+                        siteSample: sample,
+                        derSample: this.derSampleCache,
+                    });
+                case 'feedin':
+                    return sample;
+            }
+        })();
+        
+        return siteSample;
+        
     
-                switch (this.location) {
-                    case 'consumption':
-                        return convertConsumptionMeteringToFeedInMetering({
-                            siteSample: sample,
-                            derSample: this.derSampleCache,
-                        });
-                    case 'feedin':
-                        return sample;
-                }
-            })();
-    
-            return siteSample;
-            
-        }
-        else  {
-            this.logger.debug('Meter model is float');
-            const siteSample = (() => {
-                const sample = generateSiteSample_float({
-                    meter: meterModel as MeterModel_float,
-                });
-    
-                switch (this.location) {
-                    case 'consumption':
-                        return convertConsumptionMeteringToFeedInMetering({
-                            siteSample: sample,
-                            derSample: this.derSampleCache,
-                        });
-                    case 'feedin':
-                        return sample;
-                }
-            })();
-    
-            return siteSample;
-        }
         
     }
 
@@ -101,44 +79,18 @@ export class SunSpecMeterSiteSamplePoller extends SiteSamplePollerBase {
     }
 }
 
-function generateSiteSample_int({ meter }: { meter: MeterModel_int }): SiteSample {
-    const meterMetrics = getMeterMetrics_int(meter);
-    return {
-        date: new Date(),
-        realPower: meterMetrics.WphA
-            ? {
-                  type: 'perPhaseNet',
-                  phaseA: meterMetrics.WphA,
-                  phaseB: meterMetrics.WphB,
-                  phaseC: meterMetrics.WphC,
-                  net: meterMetrics.W,
-              }
-            : { type: 'noPhase', net: meterMetrics.W },
-        reactivePower: meterMetrics.VARphA
-            ? {
-                  type: 'perPhaseNet',
-                  phaseA: meterMetrics.VARphA,
-                  phaseB: meterMetrics.VARphB,
-                  phaseC: meterMetrics.VARphC,
-                  net: assertNonNull(meterMetrics.VAR),
-              }
-            : {
-                  type: 'noPhase',
-                  net: assertNonNull(meterMetrics.VAR),
-              },
-        voltage: {
-            type: 'perPhase',
-            phaseA: assertNonNull(meterMetrics.PhVphA ?? meterMetrics.PhV),
-            phaseB: meterMetrics.PhVphB,
-            phaseC: meterMetrics.PhVphC,
-        },
-        frequency: meterMetrics.Hz,
-    };
-    
-}
+function generateSiteSample({
+    meter,
+}: {
+    meter: MeterModel_int | MeterModel_float;
+}): SiteSample {
+    const isIntModel = (meter: MeterModel_int | MeterModel_float): meter is MeterModel_int =>
+        'someUniquePropertyForIntModel' in meter; // Replace 'someUniquePropertyForIntModel' with an actual property unique to MeterModel_int
 
-function generateSiteSample_float({ meter }: { meter: MeterModel_float }): SiteSample {
-    const meterMetrics = getMeterMetrics_float(meter);
+    const meterMetrics = isIntModel(meter)
+        ? getMeterMetrics_int(meter)
+        : getMeterMetrics_float(meter);
+
     return {
         date: new Date(),
         realPower: meterMetrics.WphA

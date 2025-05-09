@@ -19,22 +19,24 @@ export class MeterSunSpecConnection extends SunSpecConnection {
             throw new Error('No SunSpec meter model address');
         }
 
-        if (Number(address) === 204 || Number(address) === 203 || Number(address) === 202 || Number(address) === 201) {
-            const data = await meterModel_int.read({
-                modbusConnection: this.modbusConnection,
-                address,
-                unitId: this.unitId,
-            });
-            return data;
-        }
-        else {  
-            const data = await meterModel_float.read({
-                modbusConnection: this.modbusConnection,
-                address,
-                unitId: this.unitId,
-            });
-            return data;
-        }
+        
+        const data_int = await meterModel_int.read({
+            modbusConnection: this.modbusConnection,
+            address,
+            unitId: this.unitId,
+        });
+ 
+             
+        const data_float = await meterModel_float.read({
+            modbusConnection: this.modbusConnection,
+            address,
+            unitId: this.unitId,
+        });
+
+        const data = { ...data_int, ...data_float };
+
+        return data;
+        
 
         
     }

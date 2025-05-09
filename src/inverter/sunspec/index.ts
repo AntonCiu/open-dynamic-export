@@ -53,9 +53,7 @@ export class SunSpecInverterDataPoller extends InverterDataPollerBase {
             inverterIndex,
         });
 
-        this.inverterConnection = new InverterSunSpecConnection(
-            sunspecInverterConfig,
-        );
+        this.inverterConnection = new InverterSunSpecConnection(sunspecInverterConfig);
 
         void this.startPolling();
     }
@@ -91,31 +89,18 @@ export class SunSpecInverterDataPoller extends InverterDataPollerBase {
 
         this.logger.trace({ duration, models }, 'Got inverter data');
         
-        if (models.inverter.ID == 101 || models.inverter.ID == 102 || models.inverter.ID == 103 ) {
-            const inverterData = generateInverterData_int(models as {
-                inverter: InverterModel_int;
-                nameplate: NameplateModel;
-                settings: SettingsModel;
-                status: StatusModel;
-            });
-            return inverterData;
-            
+        const inverterData = generateInverterData(models);
         
-        }
-        else  { 
-                const inverterData = generateInverterData_float(models as {
-                    inverter: InverterModel_float;
-                    nameplate: NameplateModel;
-                    settings: SettingsModel;
-                    status: StatusModel;
-                });
-                return inverterData;
-        }
+        return inverterData;
+
     }
 
     override onDestroy(): void {
         this.inverterConnection.onDestroy();
     }
+            
+        
+        // 
 
     override async onControl(
         inverterConfiguration: InverterConfiguration,
@@ -143,18 +128,21 @@ export class SunSpecInverterDataPoller extends InverterDataPollerBase {
     }
 }
 
-export function generateInverterData_int({
+export function generateInverterData({
     inverter,
     nameplate,
     settings,
     status,
 }: {
-    inverter: InverterModel_int;
+    inverter: InverterModel_int | InverterModel_float;
     nameplate: NameplateModel;
     settings: SettingsModel;
     status: StatusModel;
 }): InverterData {
-    const inverterMetrics = getInverterMetrics_int(inverter);
+    const isIntModel = 'W_SF' in inverter;
+    const inverterMetrics = isIntModel
+        ? getInverterMetrics_int(inverter as InverterModel_int)
+        : getInverterMetrics_float(inverter as InverterModel_float);
     const nameplateMetrics = getNameplateMetrics(nameplate);
     const settingsMetrics = getSettingsMetrics(settings);
 
@@ -167,61 +155,7 @@ export function generateInverterData_int({
         inverterMetrics.PhVphA === 0 &&
         inverter.St === InverterState.FAULT &&
         // normal polling shouldn't return 0 for these values
-        inverter.W_SF === 0 &&
-        inverter.WH === 0
-    ) {
-        throw new Error('Inverter returned faulty metrics');
-    }
-
-    return {
-        date: new Date(),
-        inverter: {
-            realPower: inverterMetrics.W,
-            reactivePower: inverterMetrics.VAr ?? 0,
-            voltagePhaseA: inverterMetrics.PhVphA,
-            voltagePhaseB: inverterMetrics.PhVphB,
-            voltagePhaseC: inverterMetrics.PhVphC,
-            frequency: inverterMetrics.Hz,
-        },
-        nameplate: {
-            type: nameplate.DERTyp,
-            maxW: nameplateMetrics.WRtg,
-            maxVA: nameplateMetrics.VARtg,
-            maxVar: nameplateMetrics.VArRtgQ1,
-        },
-        settings: {
-            maxW: settingsMetrics.WMax,
-            maxVA: settingsMetrics.VAMax,
-            maxVar: settingsMetrics.VArMaxQ1,
-        },
-        status: generateInverterDataStatus({ status }),
-    };
-}
-
-export function generateInverterData_float({
-    inverter,
-    nameplate,
-    settings,
-    status,
-}: {
-    inverter: InverterModel_float;
-    nameplate: NameplateModel;
-    settings: SettingsModel;
-    status: StatusModel;
-}): InverterData {
-    const inverterMetrics = getInverterMetrics_float(inverter);
-    const nameplateMetrics = getNameplateMetrics(nameplate);
-    const settingsMetrics = getSettingsMetrics(settings);
-
-    // observed some Fronius inverters randomly spit out 0 values even though the inverter is operating normally
-    // may be related to the constant polling of SunSpec Modbus?
-    // ignore this state and hope the next poll will return valid data
-    if (
-        inverterMetrics.W === 0 &&
-        inverterMetrics.Hz === 0 &&
-        inverterMetrics.PhVphA === 0 &&
-        inverter.St === InverterState.FAULT &&
-        // normal polling shouldn't return 0 for these values
+        (isIntModel ? (inverter as InverterModel_int).W_SF === 0 : true) &&
         inverter.WH === 0
     ) {
         throw new Error('Inverter returned faulty metrics');
