@@ -1206,7 +1206,7 @@ export interface components {
              *     Model identifier
              * @enum {number}
              */
-            ID: 101 | 102 | 103 | 111 | 112 | 113;
+            ID: 101 | 102 | 103;
         };
         /**
          * @description Type of DER device Enumeration

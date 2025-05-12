@@ -538,7 +538,7 @@ export type MeterModel_int = {
 };
 
 export const meterModel_int = modbusModelFactory<MeterModel_int>({
-    name: 'meter_int',
+    name: 'meter',
     mapping: {
         ID: {
             start: 0,
@@ -1371,7 +1371,7 @@ export type MeterModel_float = {
 };
 
 export const meterModel_float = modbusModelFactory<MeterModel_float>({
-    name: 'meter_float',
+    name: 'meter',
     mapping: {
         ID: {
             start: 0,
