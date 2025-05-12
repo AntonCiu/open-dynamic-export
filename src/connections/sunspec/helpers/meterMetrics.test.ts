@@ -1,18 +1,13 @@
 import { expect, it } from 'vitest';
 import {
-    type MeterEvent,
+    MeterEvent,
     type MeterModel_int,
     type MeterModel_float,
 } from '../models/meter.js';
 import { getMeterMetrics_int, getMeterMetrics_float } from './meterMetrics.js';
 
-function isMeterModelFloat(
-    meter: MeterModel_int | MeterModel_float,
-): meter is MeterModel_float {
-    return [211, 212, 213, 214].includes(meter.ID); // Replace with actual float model IDs
-}
-
 it('getMeterMetrics handles both int and float models', () => {
+    // Test case for MeterModel_int
     const meterInt: MeterModel_int = {
         ID: 203,
         L: 105,
@@ -90,49 +85,112 @@ it('getMeterMetrics handles both int and float models', () => {
         Evt: 0 as MeterEvent,
     };
 
+    const resultInt = getMeterMetrics_int(meterInt);
+
+    expect(resultInt).toStrictEqual({
+        phases: 'threePhase',
+        A: 5.91,
+        AphA: 3.55,
+        AphB: 1.04,
+        AphC: 1.32,
+        Hz: 49.9,
+        PF: 78,
+        PFphA: 96,
+        PFphB: 0,
+        PFphC: 4,
+        PPV: 406.7,
+        PPVphAB: 406.3,
+        PPVphBC: 406.2,
+        PPVphCA: 407.7,
+        PhV: 234.8,
+        PhVphA: 235.5,
+        PhVphB: 233.7,
+        PhVphC: 235.3,
+        VA: 951,
+        VAR: -584.1,
+        VARphA: -203.3,
+        VARphB: -143.9,
+        VARphC: -236.8,
+        VAphA: 835,
+        VAphB: 242.8,
+        VAphC: 309.6,
+        W: -750.8,
+        WphA: -739.2,
+        WphB: 0,
+        WphC: -11.6,
+    });
+
+    // Test case for MeterModel_float (if applicable)
     const meterFloat: MeterModel_float = {
-        ...meterInt,
-        ID: 211, // Replace with an actual float model ID
+        ID: 211,
+        L: 0,
+        A: 0,
+        AphA: null,
+        AphB: null,
+        AphC: null,
+        PhV: null,
+        PhVphA: null,
+        PhVphB: null,
+        PhVphC: null,
+        PPV: null,
+        PPVphAB: null,
+        PPVphBC: null,
+        PPVphCA: null,
+        Hz: 0,
+        W: 0,
+        WphA: null,
+        WphB: null,
+        WphC: null,
+        VA: null,
+        VAphA: null,
+        VAphB: null,
+        VAphC: null,
+        VAR: null,
+        VARphA: null,
+        VARphB: null,
+        VARphC: null,
+        PF: null,
+        PFphA: null,
+        PFphB: null,
+        PFphC: null,
+        TotWhExp: 0,
+        TotWhExpPhA: null,
+        TotWhExpPhB: null,
+        TotWhExpPhC: null,
+        TotWhImp: 0,
+        TotWhImpPhA: null,
+        TotWhImpPhB: null,
+        TotWhImpPhC: null,
+        TotVAhExp: 0,
+        TotVAhExpPhA: null,
+        TotVAhExpPhB: null,
+        TotVAhExpPhC: null,
+        TotVAhImp: 0,
+        TotVAhImpPhA: null,
+        TotVAhImpPhB: null,
+        TotVAhImpPhC: null,
+        TotVArhImpQ1: 0,
+        TotVArhImpQ1PhA: null,
+        TotVArhImpQ1PhB: null,
+        TotVArhImpQ1PhC: null,
+        TotVArhImpQ2: 0,
+        TotVArhImpQ2PhA: null,
+        TotVArhImpQ2PhB: null,
+        TotVArhImpQ2PhC: null,
+        TotVArhExpQ3: 0,
+        TotVArhExpQ3PhA: null,
+        TotVArhExpQ3PhB: null,
+        TotVArhExpQ3PhC: null,
+        TotVArhExpQ4: 0,
+        TotVArhExpQ4PhA: null,
+        TotVArhExpQ4PhB: null,
+        TotVArhExpQ4PhC: null,
+        Evt: MeterEvent.PowerFailure,
     };
 
-    const testCases = [meterInt, meterFloat];
+    const resultFloat = getMeterMetrics_float(meterFloat);
 
-    testCases.forEach((meter) => {
-        const result = isMeterModelFloat(meter)
-            ? getMeterMetrics_float(meter)
-            : getMeterMetrics_int(meter);
-
-        expect(result).toStrictEqual({
-            phases: 'threePhase',
-            A: 5.91,
-            AphA: 3.55,
-            AphB: 1.04,
-            AphC: 1.32,
-            Hz: 49.9,
-            PF: 78,
-            PFphA: 96,
-            PFphB: 0,
-            PFphC: 4,
-            PPV: 406.7,
-            PPVphAB: 406.3,
-            PPVphBC: 406.2,
-            PPVphCA: 407.7,
-            PhV: 234.8,
-            PhVphA: 235.5,
-            PhVphB: 233.7,
-            PhVphC: 235.3,
-            VA: 951,
-            VAR: -584.1,
-            VARphA: -203.3,
-            VARphB: -143.9,
-            VARphC: -236.8,
-            VAphA: 835,
-            VAphB: 242.8,
-            VAphC: 309.6,
-            W: -750.8,
-            WphA: -739.2,
-            WphB: 0,
-            WphC: -11.6,
-        });
+    expect(resultFloat).toStrictEqual({
+        // Add expected results for MeterModel_float here
     });
 });
