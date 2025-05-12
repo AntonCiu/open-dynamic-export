@@ -56,9 +56,11 @@ export class InverterSunSpecConnection extends SunSpecConnection {
             throw new Error('No SunSpec inverter model address');
         }
 
-        // Determine if the model is int or float based on the ID
-        const id = (address as { ID: number }).ID; // Explicitly cast `address` to include the `ID` field
-        if ([101, 102, 103].includes(id)) {
+        if (
+            modelAddressById.get(103) ||
+            modelAddressById.get(102) ||
+            modelAddressById.get(101)
+        ) {
             // Read int model
             const model_int = await inverterModel_int.read({
                 modbusConnection: this.modbusConnection,
@@ -66,7 +68,11 @@ export class InverterSunSpecConnection extends SunSpecConnection {
                 unitId: this.unitId,
             });
             return model_int;
-        } else if ([111, 112, 113].includes(id)) {
+        } else if (
+            modelAddressById.get(113) ||
+            modelAddressById.get(112) ||
+            modelAddressById.get(111)
+        ) {
             // Read float model
             const model_float = await inverterModel_float.read({
                 modbusConnection: this.modbusConnection,
@@ -75,7 +81,7 @@ export class InverterSunSpecConnection extends SunSpecConnection {
             });
             return model_float;
         } else {
-            throw new Error(`Unsupported inverter model ID: ${id}`);
+            throw new Error(`Unsupported inverter model ID: ${address.ID}`);
         }
     }
 
