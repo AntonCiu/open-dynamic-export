@@ -1691,8 +1691,8 @@ export const meterModel_float = modbusModelFactory<MeterModel_float>({
         },
         Evt: {
             start: 124,
-            end: 126,
-            readConverter: registersToFloat,
+            end: 125,
+            readConverter: registersToUint16,
         },
     },
 });
