@@ -1605,93 +1605,93 @@ export const meterModel_float = modbusModelFactory<MeterModel_float>({
             readConverter: registersToFloat,
         },
         TotVAhImpPhC: {
+            start: 90,
+            end: 92,
+            readConverter: registersToFloat,
+        },
+        TotVArhImpQ1: {
             start: 92,
             end: 94,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ1: {
+        TotVArhImpQ1PhA: {
             start: 94,
             end: 96,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ1PhA: {
+        TotVArhImpQ1PhB: {
             start: 96,
             end: 98,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ1PhB: {
+        TotVArhImpQ1PhC: {
             start: 98,
             end: 100,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ1PhC: {
+        TotVArhImpQ2: {
             start: 100,
             end: 102,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ2: {
+        TotVArhImpQ2PhA: {
             start: 102,
             end: 104,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ2PhA: {
+        TotVArhImpQ2PhB: {
             start: 104,
             end: 106,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ2PhB: {
+        TotVArhImpQ2PhC: {
             start: 106,
             end: 108,
             readConverter: registersToFloat,
         },
-        TotVArhImpQ2PhC: {
+        TotVArhExpQ3: {
             start: 108,
             end: 110,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ3: {
+        TotVArhExpQ3PhA: {
             start: 110,
             end: 112,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ3PhA: {
+        TotVArhExpQ3PhB: {
             start: 112,
             end: 114,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ3PhB: {
+        TotVArhExpQ3PhC: {
             start: 114,
             end: 116,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ3PhC: {
+        TotVArhExpQ4: {
             start: 116,
             end: 118,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ4: {
+        TotVArhExpQ4PhA: {
             start: 118,
             end: 120,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ4PhA: {
+        TotVArhExpQ4PhB: {
             start: 120,
             end: 122,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ4PhB: {
+        TotVArhExpQ4PhC: {
             start: 122,
             end: 124,
             readConverter: registersToFloat,
         },
-        TotVArhExpQ4PhC: {
+        Evt: {
             start: 124,
             end: 126,
-            readConverter: registersToFloat,
-        },
-        Evt: {
-            start: 126,
-            end: 128,
             readConverter: registersToFloat,
         },
     },

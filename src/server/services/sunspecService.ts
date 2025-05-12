@@ -2,19 +2,35 @@ import 'dotenv/config';
 import { getConfig } from '../../helpers/config.js';
 import { InverterSunSpecConnection } from '../../connections/sunspec/connection/inverter.js';
 import { MeterSunSpecConnection } from '../../connections/sunspec/connection/meter.js';
-import { getInverterMetrics_int, getInverterMetrics_float } from '../../connections/sunspec/helpers/inverterMetrics.js';
-import { getMeterMetrics_int, getMeterMetrics_float } from '../../connections/sunspec/helpers/meterMetrics.js';
+import {
+    getInverterMetrics_int,
+    getInverterMetrics_float,
+} from '../../connections/sunspec/helpers/inverterMetrics.js';
+import {
+    getMeterMetrics_int,
+    getMeterMetrics_float,
+} from '../../connections/sunspec/helpers/meterMetrics.js';
 import { getNameplateMetrics } from '../../connections/sunspec/helpers/nameplateMetrics.js';
 import { getSettingsMetrics } from '../../connections/sunspec/helpers/settingsMetrics.js';
 import { getStatusMetrics } from '../../connections/sunspec/helpers/statusMetrics.js';
-import { MeterModel_float, MeterModel_int } from '../../connections/sunspec/models/meter.js';
-import { InverterModel_float, InverterModel_int } from '../../connections/sunspec/models/inverter.js';
+import {
+    type MeterModel_float,
+    type MeterModel_int,
+} from '../../connections/sunspec/models/meter.js';
+import {
+    type InverterModel_float,
+    type InverterModel_int,
+} from '../../connections/sunspec/models/inverter.js';
 
-function isMeterModelFloat(meter: MeterModel_int | MeterModel_float): meter is MeterModel_float {
+function isMeterModelFloat(
+    meter: MeterModel_int | MeterModel_float,
+): meter is MeterModel_float {
     return [211, 212, 213, 214].includes(meter.ID);
 }
 
-function isInverterModelFloat(inverter: InverterModel_int | InverterModel_float): inverter is InverterModel_float {
+function isInverterModelFloat(
+    inverter: InverterModel_int | InverterModel_float,
+): inverter is InverterModel_float {
     return [112, 111, 113].includes(inverter.ID); // Replace with actual float model IDs
 }
 
