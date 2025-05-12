@@ -419,7 +419,6 @@ export type InverterModel_float = {
      */
     Hz: number;
 
-
     /**
      * AC Apparent Power
      *
@@ -427,7 +426,6 @@ export type InverterModel_float = {
      */
     VA: number | null;
 
-    
     /**
      * AC Reactive Power
      *

@@ -13,7 +13,8 @@ export type Mapping<
         start: number;
         end: number;
     } & (Key extends WriteableKeys
-        ? { writeConverter: (value: Model[Key]) => number[] }
+        ? // if the key is writeable, it must have a writeConverter
+          { writeConverter: (value: Model[Key]) => number[] }
         : { writeConverter?: undefined });
 };
 
@@ -60,7 +61,7 @@ export function modbusModelFactory<
             const duration = end - start;
 
             writeLatency({
-                field: 'modbusModelFactory',
+                field: 'sunSpecModelFactory',
                 duration,
                 tags: {
                     operation: 'read',
@@ -120,7 +121,7 @@ export function modbusModelFactory<
             const duration = end - start;
 
             writeLatency({
-                field: 'modbusModelFactory',
+                field: 'sunSpecModelFactory',
                 duration,
                 tags: {
                     operation: 'write',
@@ -196,6 +197,10 @@ export function convertWriteRegisters<
     mapping: Mapping<Model, WriteableKeys>;
     length: number;
 }): number[] {
+    // modbus allows for writing values to registers that do not support writing, they will simply be ignored
+    // we use this behaviour as a shortcut to use the same model definition and start address for reading and writing
+
+    // start with all empty registers
     const registers = Array<number>(length).fill(0);
 
     objectEntriesWithType(values).forEach(([key, value]) => {
@@ -209,6 +214,7 @@ export function convertWriteRegisters<
             try {
                 return (
                     writeConverter as (
+                        // overcome TypeScript type issue
                         value: Model[WriteableKeys],
                     ) => number[]
                 )(value);

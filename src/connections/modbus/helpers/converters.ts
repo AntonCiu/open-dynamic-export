@@ -291,7 +291,9 @@ export function registersToFloat(registers: number[]): number {
 
     const buffer = Buffer.alloc(4);
     if (registers[0] === undefined || registers[1] === undefined) {
-        throw new Error('Invalid register values: registers[0] or registers[1] is undefined');
+        throw new Error(
+            'Invalid register values: registers[0] or registers[1] is undefined',
+        );
     }
     buffer.writeUInt16BE(registers[0], 0);
     buffer.writeUInt16BE(registers[1], 2);
