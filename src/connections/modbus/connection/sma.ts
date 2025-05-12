@@ -62,6 +62,7 @@ export class SmaConnection {
             address: {
                 start: 30231,
                 length: 2,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -71,6 +72,7 @@ export class SmaConnection {
             address: {
                 start: 33025,
                 length: 20,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -88,6 +90,7 @@ export class SmaConnection {
             address: {
                 start: 30775,
                 length: 22,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -97,6 +100,7 @@ export class SmaConnection {
             address: {
                 start: 30803,
                 length: 2,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -106,6 +110,7 @@ export class SmaConnection {
             address: {
                 start: 30807,
                 length: 14,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -125,6 +130,7 @@ export class SmaConnection {
             address: {
                 start: 30053,
                 length: 2,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -140,6 +146,7 @@ export class SmaConnection {
             address: {
                 start: 30217,
                 length: 2,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -153,6 +160,7 @@ export class SmaConnection {
             address: {
                 start: 31253,
                 length: 26,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -162,6 +170,7 @@ export class SmaConnection {
             address: {
                 start: 31433,
                 length: 24,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -177,6 +186,7 @@ export class SmaConnection {
             address: {
                 start: 40210,
                 length: 2,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -186,6 +196,7 @@ export class SmaConnection {
             address: {
                 start: 41253,
                 length: 3,
+                ID: '',
             },
             unitId: this.unitId,
         });
@@ -203,6 +214,7 @@ export class SmaConnection {
             address: {
                 start: 40210,
                 length: 2,
+                ID: '',
             },
             unitId: this.unitId,
             values,
@@ -215,6 +227,7 @@ export class SmaConnection {
             address: {
                 start: 41253,
                 length: 3,
+                ID: '',
             },
             unitId: this.unitId,
             values,
