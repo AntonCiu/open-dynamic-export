@@ -1194,7 +1194,6 @@ export type MeterModel_float = {
      */
     TotWhImpPhC: number | null;
 
-
     /**
      * TotVAhExp
      *
@@ -1377,7 +1376,8 @@ export const meterModel_float = modbusModelFactory<MeterModel_float>({
         ID: {
             start: 0,
             end: 1,
-            readConverter: (value) => registersToId(value, [211, 212, 213, 214]),
+            readConverter: (value) =>
+                registersToId(value, [211, 212, 213, 214]),
         },
         L: {
             start: 1,
@@ -1696,7 +1696,6 @@ export const meterModel_float = modbusModelFactory<MeterModel_float>({
         },
     },
 });
-
 
 /**
  * MeterEvent Enumeration
