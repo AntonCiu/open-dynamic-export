@@ -3,7 +3,10 @@ import {
     numberWithPow10,
     numberNullableWithPow10,
 } from '../../../helpers/number.js';
-import { type InverterModel_int, type InverterModel_float } from '../models/inverter.js';
+import {
+    type InverterModel_int,
+    type InverterModel_float,
+} from '../models/inverter.js';
 
 import { getSitePhasesFromInverter } from './sitePhases.js';
 
@@ -132,23 +135,23 @@ export function getInverterMetrics_float(inverter: InverterModel_float) {
     const scaledValues = {
         A: inverter.A,
         AphA: inverter.AphA,
-        AphB: inverter.AphB, 
-        AphC: inverter.AphC, 
-        PPVphAB: inverter.PPVphAB, 
-        PPVphBC: inverter.PPVphBC, 
-        PPVphCA: inverter.PPVphCA, 
-        PhVphA: inverter.PhVphA, 
-        PhVphB: inverter.PhVphB, 
-        PhVphC: inverter.PhVphC, 
+        AphB: inverter.AphB,
+        AphC: inverter.AphC,
+        PPVphAB: inverter.PPVphAB,
+        PPVphBC: inverter.PPVphBC,
+        PPVphCA: inverter.PPVphCA,
+        PhVphA: inverter.PhVphA,
+        PhVphB: inverter.PhVphB,
+        PhVphC: inverter.PhVphC,
         W: inverter.W,
         Hz: inverter.Hz,
-        VA: inverter.VA, 
-        VAr: inverter.VAr, 
+        VA: inverter.VA,
+        VAr: inverter.VAr,
         PF: inverter.PF,
-        WH: inverter.WH, 
-        DCA: inverter.DCA, 
-        DCV: inverter.DCV, 
-        DCW: inverter.DCW, 
+        WH: inverter.WH,
+        DCA: inverter.DCA,
+        DCV: inverter.DCV,
+        DCW: inverter.DCW,
     };
 
     switch (phases) {

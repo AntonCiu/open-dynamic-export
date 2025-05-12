@@ -9,7 +9,10 @@ import {
 } from '../../coordinator/helpers/inverterController.js';
 import { type Config } from '../../helpers/config.js';
 import { InverterSunSpecConnection } from '../../connections/sunspec/connection/inverter.js';
-import { getInverterMetrics_int, getInverterMetrics_float } from '../../connections/sunspec/helpers/inverterMetrics.js';
+import {
+    getInverterMetrics_int,
+    getInverterMetrics_float,
+} from '../../connections/sunspec/helpers/inverterMetrics.js';
 import { getNameplateMetrics } from '../../connections/sunspec/helpers/nameplateMetrics.js';
 import { getSettingsMetrics } from '../../connections/sunspec/helpers/settingsMetrics.js';
 import { getStatusMetrics } from '../../connections/sunspec/helpers/statusMetrics.js';
@@ -23,7 +26,10 @@ import {
     VArPct_Ena,
     OutPFSet_Ena,
 } from '../../connections/sunspec/models/controls.js';
-import { type InverterModel_int, type InverterModel_float } from '../../connections/sunspec/models/inverter.js';
+import {
+    type InverterModel_int,
+    type InverterModel_float,
+} from '../../connections/sunspec/models/inverter.js';
 import { InverterState } from '../../connections/sunspec/models/inverter.js';
 import { type NameplateModel } from '../../connections/sunspec/models/nameplate.js';
 import { type SettingsModel } from '../../connections/sunspec/models/settings.js';
@@ -53,7 +59,9 @@ export class SunSpecInverterDataPoller extends InverterDataPollerBase {
             inverterIndex,
         });
 
-        this.inverterConnection = new InverterSunSpecConnection(sunspecInverterConfig);
+        this.inverterConnection = new InverterSunSpecConnection(
+            sunspecInverterConfig,
+        );
 
         void this.startPolling();
     }
@@ -88,19 +96,17 @@ export class SunSpecInverterDataPoller extends InverterDataPollerBase {
         const duration = end - start;
 
         this.logger.trace({ duration, models }, 'Got inverter data');
-        
-        const inverterData = generateInverterData(models);
-        
-        return inverterData;
 
+        const inverterData = generateInverterData(models);
+
+        return inverterData;
     }
 
     override onDestroy(): void {
         this.inverterConnection.onDestroy();
     }
-            
-        
-        // 
+
+    //
 
     override async onControl(
         inverterConfiguration: InverterConfiguration,
@@ -141,8 +147,8 @@ export function generateInverterData({
 }): InverterData {
     const isIntModel = 'W_SF' in inverter;
     const inverterMetrics = isIntModel
-        ? getInverterMetrics_int(inverter as InverterModel_int)
-        : getInverterMetrics_float(inverter as InverterModel_float);
+        ? getInverterMetrics_int(inverter)
+        : getInverterMetrics_float(inverter);
     const nameplateMetrics = getNameplateMetrics(nameplate);
     const settingsMetrics = getSettingsMetrics(settings);
 
@@ -155,7 +161,7 @@ export function generateInverterData({
         inverterMetrics.PhVphA === 0 &&
         inverter.St === InverterState.FAULT &&
         // normal polling shouldn't return 0 for these values
-        (isIntModel ? (inverter as InverterModel_int).W_SF === 0 : true) &&
+        (isIntModel ? inverter.W_SF === 0 : true) &&
         inverter.WH === 0
     ) {
         throw new Error('Inverter returned faulty metrics');

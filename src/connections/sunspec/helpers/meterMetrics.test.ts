@@ -1,8 +1,14 @@
 import { expect, it } from 'vitest';
-import { type MeterEvent, type MeterModel_int, type MeterModel_float } from '../models/meter.js';
+import {
+    type MeterEvent,
+    type MeterModel_int,
+    type MeterModel_float,
+} from '../models/meter.js';
 import { getMeterMetrics_int, getMeterMetrics_float } from './meterMetrics.js';
 
-function isMeterModelFloat(meter: MeterModel_int | MeterModel_float): meter is MeterModel_float {
+function isMeterModelFloat(
+    meter: MeterModel_int | MeterModel_float,
+): meter is MeterModel_float {
     return [211, 212, 213, 214].includes(meter.ID); // Replace with actual float model IDs
 }
 

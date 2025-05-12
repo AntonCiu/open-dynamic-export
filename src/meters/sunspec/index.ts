@@ -5,8 +5,14 @@ import { type InvertersPoller } from '../../coordinator/helpers/inverterSample.j
 import { type Config } from '../../helpers/config.js';
 import { type DerSample } from '../../coordinator/helpers/derSample.js';
 import { MeterSunSpecConnection } from '../../connections/sunspec/connection/meter.js';
-import { getMeterMetrics_int, getMeterMetrics_float } from '../../connections/sunspec/helpers/meterMetrics.js';
-import { type MeterModel_int, type MeterModel_float, meterModel_int } from '../../connections/sunspec/models/meter.js';
+import {
+    getMeterMetrics_int,
+    getMeterMetrics_float,
+} from '../../connections/sunspec/helpers/meterMetrics.js';
+import {
+    type MeterModel_int,
+    type MeterModel_float,
+} from '../../connections/sunspec/models/meter.js';
 
 type SunSpecMeterConfig = Extract<Config['meter'], { type: 'sunspec' }>;
 
@@ -67,11 +73,8 @@ export class SunSpecMeterSiteSamplePoller extends SiteSamplePollerBase {
                     return sample;
             }
         })();
-        
+
         return siteSample;
-        
-    
-        
     }
 
     override onDestroy() {
@@ -84,10 +87,8 @@ function generateSiteSample({
 }: {
     meter: MeterModel_int | MeterModel_float;
 }): SiteSample {
-    const isIntModel = (meter: MeterModel_int | MeterModel_float): meter is MeterModel_int =>
-        'someUniquePropertyForIntModel' in meter; // Replace 'someUniquePropertyForIntModel' with an actual property unique to MeterModel_int
-
-    const meterMetrics = isIntModel(meter)
+    const isIntModel = 'A_SF' in meter;
+    const meterMetrics = isIntModel
         ? getMeterMetrics_int(meter)
         : getMeterMetrics_float(meter);
 
@@ -123,7 +124,6 @@ function generateSiteSample({
         frequency: meterMetrics.Hz,
     };
 }
-
 
 function convertConsumptionMeteringToFeedInMetering({
     siteSample,
