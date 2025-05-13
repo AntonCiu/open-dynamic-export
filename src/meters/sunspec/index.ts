@@ -92,6 +92,15 @@ function generateSiteSample({
         ? getMeterMetrics_int(meter)
         : getMeterMetrics_float(meter);
 
+    // Debug log for input and output
+    console.debug(
+        {
+            meter,
+            meterMetrics,
+        },
+        'Generating site sample from meter data',
+    );
+
     return {
         date: new Date(),
         realPower: meterMetrics.WphA
