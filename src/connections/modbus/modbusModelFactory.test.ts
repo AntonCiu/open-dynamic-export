@@ -122,7 +122,11 @@ describe('modbusModelFactory', () => {
         const result = await model.read({
             modbusConnection,
             unitId: 1,
-            address: { start: 40000, length: 6 },
+            address: {
+                start: 40000,
+                length: 6,
+                ID: '',
+            },
         });
 
         expect(result).toEqual({
@@ -151,7 +155,11 @@ describe('modbusModelFactory', () => {
                 values,
                 modbusConnection,
                 unitId: 1,
-                address: { start: 40000, length: 6 },
+                address: {
+                    start: 40000,
+                    length: 6,
+                    ID: '',
+                },
             }),
         ).resolves.toBeUndefined();
 

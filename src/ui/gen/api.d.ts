@@ -902,7 +902,7 @@ export interface components {
              *     Model identifier.
              * @enum {number}
              */
-            ID: 201 | 202 | 203;
+            ID: 201 | 202 | 203 | 204 | 211 | 212 | 213 | 214;
         };
         /**
          * @description InverterState Enumeration

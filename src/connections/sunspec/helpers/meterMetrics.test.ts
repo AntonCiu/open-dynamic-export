@@ -1,9 +1,14 @@
 import { expect, it } from 'vitest';
-import { type MeterEvent, type MeterModel } from '../models/meter.js';
-import { getMeterMetrics } from './meterMetrics.js';
+import {
+    MeterEvent,
+    type MeterModel_int,
+    type MeterModel_float,
+} from '../models/meter.js';
+import { getMeterMetrics_int, getMeterMetrics_float } from './meterMetrics.js';
 
-it('getMeterMetrics returns data', () => {
-    const meter: MeterModel = {
+it('getMeterMetrics handles both int and float models', () => {
+    // Test case for MeterModel_int
+    const meterInt: MeterModel_int = {
         ID: 203,
         L: 105,
         A: 591,
@@ -80,9 +85,9 @@ it('getMeterMetrics returns data', () => {
         Evt: 0 as MeterEvent,
     };
 
-    const result = getMeterMetrics(meter);
+    const resultInt = getMeterMetrics_int(meterInt);
 
-    expect(result).toStrictEqual({
+    expect(resultInt).toStrictEqual({
         phases: 'threePhase',
         A: 5.91,
         AphA: 3.55,
@@ -113,5 +118,79 @@ it('getMeterMetrics returns data', () => {
         WphA: -739.2,
         WphB: 0,
         WphC: -11.6,
-    } satisfies ReturnType<typeof getMeterMetrics>);
+    });
+
+    // Test case for MeterModel_float (if applicable)
+    const meterFloat: MeterModel_float = {
+        ID: 213,
+        L: 0,
+        A: 0,
+        AphA: null,
+        AphB: null,
+        AphC: null,
+        PhV: null,
+        PhVphA: null,
+        PhVphB: null,
+        PhVphC: null,
+        PPV: null,
+        PPVphAB: null,
+        PPVphBC: null,
+        PPVphCA: null,
+        Hz: 0,
+        W: 0,
+        WphA: null,
+        WphB: null,
+        WphC: null,
+        VA: null,
+        VAphA: null,
+        VAphB: null,
+        VAphC: null,
+        VAR: null,
+        VARphA: null,
+        VARphB: null,
+        VARphC: null,
+        PF: null,
+        PFphA: null,
+        PFphB: null,
+        PFphC: null,
+        TotWhExp: 0,
+        TotWhExpPhA: null,
+        TotWhExpPhB: null,
+        TotWhExpPhC: null,
+        TotWhImp: 0,
+        TotWhImpPhA: null,
+        TotWhImpPhB: null,
+        TotWhImpPhC: null,
+        TotVAhExp: 0,
+        TotVAhExpPhA: null,
+        TotVAhExpPhB: null,
+        TotVAhExpPhC: null,
+        TotVAhImp: 0,
+        TotVAhImpPhA: null,
+        TotVAhImpPhB: null,
+        TotVAhImpPhC: null,
+        TotVArhImpQ1: 0,
+        TotVArhImpQ1PhA: null,
+        TotVArhImpQ1PhB: null,
+        TotVArhImpQ1PhC: null,
+        TotVArhImpQ2: 0,
+        TotVArhImpQ2PhA: null,
+        TotVArhImpQ2PhB: null,
+        TotVArhImpQ2PhC: null,
+        TotVArhExpQ3: 0,
+        TotVArhExpQ3PhA: null,
+        TotVArhExpQ3PhB: null,
+        TotVArhExpQ3PhC: null,
+        TotVArhExpQ4: 0,
+        TotVArhExpQ4PhA: null,
+        TotVArhExpQ4PhB: null,
+        TotVArhExpQ4PhC: null,
+        Evt: MeterEvent.PowerFailure,
+    };
+
+    const resultFloat = getMeterMetrics_float(meterFloat);
+
+    expect(resultFloat).toStrictEqual({
+        // Add expected results for MeterModel_float here
+    });
 });

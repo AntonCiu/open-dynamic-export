@@ -5,8 +5,14 @@ import { type InvertersPoller } from '../../coordinator/helpers/inverterSample.j
 import { type Config } from '../../helpers/config.js';
 import { type DerSample } from '../../coordinator/helpers/derSample.js';
 import { MeterSunSpecConnection } from '../../connections/sunspec/connection/meter.js';
-import { getMeterMetrics } from '../../connections/sunspec/helpers/meterMetrics.js';
-import { type MeterModel } from '../../connections/sunspec/models/meter.js';
+import {
+    getMeterMetrics_int,
+    getMeterMetrics_float,
+} from '../../connections/sunspec/helpers/meterMetrics.js';
+import {
+    type MeterModel_int,
+    type MeterModel_float,
+} from '../../connections/sunspec/models/meter.js';
 
 type SunSpecMeterConfig = Extract<Config['meter'], { type: 'sunspec' }>;
 
@@ -76,8 +82,24 @@ export class SunSpecMeterSiteSamplePoller extends SiteSamplePollerBase {
     }
 }
 
-function generateSiteSample({ meter }: { meter: MeterModel }): SiteSample {
-    const meterMetrics = getMeterMetrics(meter);
+function generateSiteSample({
+    meter,
+}: {
+    meter: MeterModel_int | MeterModel_float;
+}): SiteSample {
+    const isIntModel = 'A_SF' in meter;
+    const meterMetrics = isIntModel
+        ? getMeterMetrics_int(meter)
+        : getMeterMetrics_float(meter);
+
+    // Debug log for input and output
+    console.debug(
+        {
+            meter,
+            meterMetrics,
+        },
+        'Generating site sample from meter data',
+    );
 
     return {
         date: new Date(),

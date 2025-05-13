@@ -1,10 +1,23 @@
 import { expect, it } from 'vitest';
-import { type InverterEvent1, type InverterModel } from '../models/inverter.js';
+import {
+    type InverterEvent1,
+    type InverterModel_int,
+    type InverterModel_float,
+} from '../models/inverter.js';
 import { InverterState } from '../models/inverter.js';
-import { getInverterMetrics } from './inverterMetrics.js';
+import {
+    getInverterMetrics_int,
+    getInverterMetrics_float,
+} from './inverterMetrics.js';
 
-it('getInverterMetrics returns data', () => {
-    const inverter: InverterModel = {
+function isInverterModelFloat(
+    inverter: InverterModel_int | InverterModel_float,
+): inverter is InverterModel_float {
+    return [112, 111, 113].includes(inverter.ID); // Replace with actual float model IDs
+}
+
+it('getInverterMetrics handles both int and float models', () => {
+    const inverterInt: InverterModel_int = {
         ID: 103,
         L: 50,
         A: 3051,
@@ -52,28 +65,39 @@ it('getInverterMetrics returns data', () => {
         EvtVnd4: 0,
     };
 
-    const result = getInverterMetrics(inverter);
+    const inverterFloat: InverterModel_float = {
+        ...inverterInt,
+        ID: 112, // Replace with an actual float model ID
+    };
 
-    expect(result).toStrictEqual({
-        A: 30.51,
-        AphA: 10.16,
-        AphB: 10.17,
-        AphC: 10.18,
-        DCA: null,
-        DCV: null,
-        DCW: 7347,
-        Hz: 49.99,
-        PF: 100,
-        PPVphAB: 396,
-        PPVphBC: 395,
-        PPVphCA: 399.2,
-        PhVphA: 230.1,
-        PhVphB: 227.7,
-        PhVphC: 229,
-        VA: 6990,
-        VAr: -25,
-        W: 6990,
-        WH: 77877496,
-        phases: 'threePhase',
-    } satisfies ReturnType<typeof getInverterMetrics>);
+    const testCases = [inverterInt, inverterFloat];
+
+    testCases.forEach((inverter) => {
+        const result = isInverterModelFloat(inverter)
+            ? getInverterMetrics_float(inverter)
+            : getInverterMetrics_int(inverter);
+
+        expect(result).toStrictEqual({
+            A: 30.51,
+            AphA: 10.16,
+            AphB: 10.17,
+            AphC: 10.18,
+            DCA: null,
+            DCV: null,
+            DCW: 7347,
+            Hz: 49.99,
+            PF: 100,
+            PPVphAB: 396,
+            PPVphBC: 395,
+            PPVphCA: 399.2,
+            PhVphA: 230.1,
+            PhVphB: 227.7,
+            PhVphC: 229,
+            VA: 6990,
+            VAr: -25,
+            W: 6990,
+            WH: 77877496,
+            phases: 'threePhase',
+        });
+    });
 });

@@ -4,7 +4,7 @@ import {
     type ControlsModelWrite,
 } from '../models/controls.js';
 import { controlsModel } from '../models/controls.js';
-import { inverterModel } from '../models/inverter.js';
+import { inverterModel_int, inverterModel_float } from '../models/inverter.js';
 import { type NameplateModel } from '../models/nameplate.js';
 import { nameplateModel } from '../models/nameplate.js';
 import { type SettingsModel } from '../models/settings.js';
@@ -47,19 +47,42 @@ export class InverterSunSpecConnection extends SunSpecConnection {
         const address =
             modelAddressById.get(103) ??
             modelAddressById.get(102) ??
-            modelAddressById.get(101);
+            modelAddressById.get(101) ??
+            modelAddressById.get(111) ??
+            modelAddressById.get(112) ??
+            modelAddressById.get(113);
 
         if (!address) {
             throw new Error('No SunSpec inverter model address');
         }
 
-        const data = await inverterModel.read({
-            modbusConnection: this.modbusConnection,
-            address,
-            unitId: this.unitId,
-        });
-
-        return data;
+        if (
+            modelAddressById.get(103) ||
+            modelAddressById.get(102) ||
+            modelAddressById.get(101)
+        ) {
+            // Read int model
+            const model_int = await inverterModel_int.read({
+                modbusConnection: this.modbusConnection,
+                address,
+                unitId: this.unitId,
+            });
+            return model_int;
+        } else if (
+            modelAddressById.get(113) ||
+            modelAddressById.get(112) ||
+            modelAddressById.get(111)
+        ) {
+            // Read float model
+            const model_float = await inverterModel_float.read({
+                modbusConnection: this.modbusConnection,
+                address,
+                unitId: this.unitId,
+            });
+            return model_float;
+        } else {
+            throw new Error(`Unsupported inverter model ID: ${address.ID}`);
+        }
     }
 
     async getNameplateModel() {
@@ -206,6 +229,7 @@ export class InverterSunSpecConnection extends SunSpecConnection {
                     address: {
                         start: address.start + 10 + i * 20,
                         length: 20,
+                        ID: '',
                     },
                     unitId: this.unitId,
                 });

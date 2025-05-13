@@ -7,6 +7,7 @@ import { type Logger } from 'pino';
 import { type ModbusSchema } from '../../../helpers/config.js';
 
 export type ModelAddress = {
+    ID: number | string;
     start: number;
     length: number;
 };
@@ -150,7 +151,8 @@ export abstract class SunSpecConnection {
 
             modelAddressById.set(modelId, {
                 start: currentAddress,
-                length: modelLength + 2, // +2 accounts for model ID and length fields
+                length: modelLength + 2,
+                ID: '',
             });
 
             // Move to the next model's address

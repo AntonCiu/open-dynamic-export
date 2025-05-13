@@ -69,6 +69,18 @@ export abstract class SiteSamplePollerBase extends EventEmitter<{
             }),
         );
 
+        if (siteSample.success) {
+            this.logger.debug(
+                { siteSample: siteSample.value },
+                'Data received from getSiteSample',
+            );
+        } else {
+            this.logger.debug(
+                { error: siteSample.error },
+                'Error received from getSiteSample',
+            );
+        }
+
         if (this.abortController.signal.aborted) {
             return;
         }
@@ -107,5 +119,20 @@ export abstract class SiteSamplePollerBase extends EventEmitter<{
                 siteSample: siteSample.value,
             });
         }
+    }
+
+    /**
+     * Logs Modbus request and response packets for debugging purposes.
+     * @param request The Modbus request packet.
+     * @param response The Modbus response packet.
+     */
+    protected logModbusPacket(request: Buffer, response: Buffer) {
+        this.logger.debug(
+            {
+                request: request.toString('hex'),
+                response: response.toString('hex'),
+            },
+            'Modbus packet debug',
+        );
     }
 }
