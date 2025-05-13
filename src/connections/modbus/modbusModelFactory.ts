@@ -108,6 +108,16 @@ export function modbusModelFactory<
                 length: address.length,
             });
 
+            // Debug log for the write operation
+            logger.debug(
+                {
+                    unitId,
+                    startAddress: address.start,
+                    registerValues,
+                },
+                'Preparing to write Modbus registers',
+            );
+
             await modbusConnection.connect();
 
             await modbusConnection.writeRegisters({
