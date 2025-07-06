@@ -1,5 +1,5 @@
-import { type CommonModel } from '../models/common.js';
-import { commonModel } from '../models/common.js';
+import { type CommonModel } from '../../sunspec/models/common.js';
+import { commonModel } from '../../sunspec/models/common.js';
 import { registersToUint32 } from '../../modbus/helpers/converters.js';
 import { type ModbusConnection } from '../../modbus/connection/base.js';
 import { getModbusConnection } from '../../modbus/connections.js';
@@ -13,7 +13,7 @@ export type ModelAddress = {
 
 type ModelAddressById = Map<number, ModelAddress>;
 
-export abstract class SunSpecConnection {
+export abstract class SunSpecfloatConnection {
     protected readonly modbusConnection: ModbusConnection;
     protected readonly unitId: number;
     private logger: Logger;
@@ -28,7 +28,7 @@ export abstract class SunSpecConnection {
         this.modbusConnection = getModbusConnection(connection);
         this.unitId = unitId;
         this.logger = this.modbusConnection.logger.child({
-            module: 'SunSpecConnection',
+            module: 'SunSpecfloatConnection',
             unitId,
         });
     }
@@ -147,14 +147,46 @@ export abstract class SunSpecConnection {
             if (modelId === 0xffff && modelLength === 0) {
                 break;
             }
+            
+            this.logger.debug(
+            {
+                currentAddress,
+            },
+            `Start Adress is ${currentAddress}`,
+            );
 
-            modelAddressById.set(modelId, {
-                start: currentAddress,
-                length: modelLength + 2, // +2 accounts for model ID and length fields
-            });
+            // Special condition to fix the inverter reporting a modellength that is too long and causing a modbus read error
+            if (modelId === 213) {
+                // Store the reduced length for your application logic
+                modelAddressById.set(modelId, {
+                    start: currentAddress,
+                    length: modelLength + 1, // or whatever your special logic requires
+                });
+                // But always advance by modelLength + 2
+                currentAddress += modelLength + 2;
+            } else {
+                modelAddressById.set(modelId, {
+                    start: currentAddress,
+                    length: modelLength + 2,
+                });
+                currentAddress += modelLength + 2;
+            }
+            
+            this.logger.debug(
+            {
+                currentAddress,
+            },
+            `End Adress is ${currentAddress}`,
+            );
+            
 
-            // Move to the next model's address
-            currentAddress += modelLength + 2; // +2 accounts for model ID and length fields
+            this.logger.debug(
+            {
+                modelId,
+                modelLength,
+            },
+            `For ${modelId} the model length is ${modelLength}`,
+        );
         }
 
         const modelIds = Array.from(modelAddressById.keys());
@@ -163,7 +195,6 @@ export abstract class SunSpecConnection {
             {
                 count: modelIds.length,
                 modelIds,
-                modelAddressById,
             },
             `Found SunSpec models for SunSpec Modbus client`,
         );

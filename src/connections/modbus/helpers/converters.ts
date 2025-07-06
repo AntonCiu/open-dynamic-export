@@ -282,3 +282,28 @@ export function registersToUint64Nullable(registers: number[]) {
 
     return registersToUint64(registers);
 }
+
+export function registersToFloat32(registers: number[]): number {
+    if (registers.length !== 2) {
+        throw new Error('Invalid register length, should be 2');
+    }
+
+    // Ensure only the lower 16 bits are used for each register
+    const high = registers[0]! & 0xffff;
+    const low = registers[1]! & 0xffff;
+
+    const buffer = Buffer.alloc(4);
+    buffer.writeUInt16BE(high, 0);
+    buffer.writeUInt16BE(low, 2);
+
+    return buffer.readFloatBE(0);
+}
+
+export function registersToBitfield32(registers: number[]): number {
+    if (registers.length !== 2) {
+        throw new Error('Invalid register length, should be 2');
+    }
+
+    // Combine two 16-bit registers into a 32-bit integer
+    return (registers[0]! << 16) | (registers[1]! & 0xffff);
+}
